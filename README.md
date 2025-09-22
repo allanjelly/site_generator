@@ -6,4 +6,6 @@ Does not support nested markdown yet, but supports multiple files/folders and ma
 
 Example pages (based on markdown from boot.dev are hosted https://allanjelly.github.io/site_generator/ 
 
+I know the code is ugly as hell, but I was pushing to finish the project, so I ended up with 300+ lines-ling main.py :-(
+
 
