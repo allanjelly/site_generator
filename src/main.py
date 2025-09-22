@@ -7,10 +7,17 @@ from parentnode import ParentNode
 import re
 import shutil
 import os
+import sys
 
 def main():
+
+    basepath ='/'
+    if len(sys.argv) >1:
+        basepath = sys.argv[1]
+    
+    print (basepath)
     copy_static_to_public()
-    generate_pages_recursive('content', 'template.html', 'public')
+    generate_pages_recursive('content', 'template.html', 'docs',basepath)
 
 def text_node_to_html_node(text_node:TextNode)->LeafNode:
 
@@ -222,10 +229,10 @@ def text_to_children(text:str) -> list[HTMLNode]:
 def copy_static_to_public():
     if os.getcwd().endswith('src'):
         src_dir = '../static'
-        dst_dir = '../public'
+        dst_dir = '../docs'
     else:
         src_dir = 'static'
-        dst_dir = 'public'
+        dst_dir = 'docs'
     if not os.path.exists('static'):
         raise Exception ("wrong path")
     
@@ -253,7 +260,7 @@ def extract_title(markdown:str)-> str:
             return line.lstrip('# ')
     raise Exception ("No title (h1) in markdown")    
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     print (f"Generating page from {from_path} to {dest_path} using {template_path}")
     if os.getcwd().endswith('src'):
         os.chdir('..')
@@ -269,6 +276,8 @@ def generate_page(from_path, template_path, dest_path):
 
     out_html = template.replace('{{ Title }}', title)
     out_html = out_html.replace('{{ Content }}', html)
+    out_html = out_html.replace('href="/', f'href="{basepath}')
+    out_html = out_html.replace('src="/', f'src="{basepath}')
     
     directory = os.path.dirname(dest_path)
     if not os.path.exists(directory):
@@ -277,7 +286,7 @@ def generate_page(from_path, template_path, dest_path):
     with open(dest_path, "w") as f:
         f.write(out_html)
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
 
     if os.getcwd().endswith('src'):
         os.chdir('..')
@@ -292,11 +301,11 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
             if src_path.endswith('.md'):
                 dst_path = dst_path[:-3]
                 dst_path += '.html'
-            generate_page(src_path, template_path, dst_path)            
+            generate_page(src_path, template_path, dst_path, basepath)            
         else:
             if not os.path.exists(dst_path):
                 os.mkdir(dst_path)
-            generate_pages_recursive (src_path, template_path, dst_path)
+            generate_pages_recursive (src_path, template_path, dst_path, basepath)
 
 
 main()
