@@ -16,7 +16,6 @@ class HTMLNode():
         if self.props:
             for prop in self.props:
                 outString += f' {prop}="{self.props[prop]}"'
-                print (outString)
         return outString
 
     def __repr__(self):
